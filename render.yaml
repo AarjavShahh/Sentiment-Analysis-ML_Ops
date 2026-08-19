@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: imdb-sentiment-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+
+
+

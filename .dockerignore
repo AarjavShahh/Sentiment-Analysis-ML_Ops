@@ -1,0 +1,15 @@
+.venv/
+venv/
+.git/
+.github/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+monitoring/
+mlflow/
+data/
+notebooks/
+logs/
+.ipynb_checkpoints
+.env

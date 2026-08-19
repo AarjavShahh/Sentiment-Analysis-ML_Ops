@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "sentiment-api"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["imdb-sentiment-api:8000"]
+
+
