@@ -1,14 +1,20 @@
-# Sentiment Analysis MLOps
+# 🎬 Sentiment Analysis MLOps Pipeline
 
-An end-to-end **Sentiment Analysis MLOps project** that demonstrates the complete machine learning lifecycle, from data ingestion and preprocessing to model training, experiment tracking, API serving, containerization, deployment, CI/CD, and monitoring.
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![ZenML](https://img.shields.io/badge/Orchestration-ZenML-purple.svg)](https://zenml.io/)
+[![MLflow](https://img.shields.io/badge/Tracking-MLflow-blue.svg)](https://mlflow.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-green.svg)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Container-Docker-blue.svg)](https://www.docker.com/)
+[![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-orange.svg)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Dashboard-Grafana-orange.svg)](https://grafana.com/)
 
-The project uses the **IMDb Movie Reviews dataset** and compares multiple machine learning models to select the best-performing sentiment classifier.
+An end-to-end **Sentiment Analysis MLOps project** demonstrating the complete machine learning lifecycle: data ingestion, preprocessing, model training, experiment tracking, API serving, containerization, deployment, CI/CD, and monitoring.
+
+The project uses the **IMDb Movie Reviews dataset** and compares multiple machine learning models to select and deploy the best sentiment classifier.
 
 ---
 
-## 🚀 Project Overview
-
-The pipeline performs the following operations:
+## 🚀 Lifecycle Workflow
 
 ```text
 IMDb Movie Reviews Dataset
@@ -29,108 +35,62 @@ IMDb Movie Reviews Dataset
  Bayes   Forest      SVM
     │       │        │
     └───────┼────────┘
+            │
             ▼
       Model Evaluation
             │
             ▼
-    Best Model Selection
+     Best Model Selection & Serialization (Joblib)
             │
             ▼
-       MLflow Tracking
-            │
-            ▼
-      Model Serialization
-            │
-            ▼
-         FastAPI
-            │
-            ▼
-          Docker
-            │
-            ▼
-     Prometheus + Grafana
-
-
-
+    ┌───────┴───────┐
+    ▼               ▼
+ FastAPI Serving   MLflow Experiment
+  (Port 8000)      Tracking (Port 5000)
+    │               │
+    ▼               ▼
+ Prometheus      Grafana Dashboards
+  (Port 9090)     (Port 3000)
 ```
 
-✨ Features
+---
 
-IMDb sentiment classification
-Automated data ingestion
-Text preprocessing
-Feature engineering
-Multiple machine learning models
-Model evaluation using F1-score
-Automatic best-model selection
-MLflow experiment tracking
-ZenML pipeline orchestration
-FastAPI prediction API
-Docker containerization
-Render deployment configuration
-Prometheus monitoring
-Grafana dashboard
-GitHub Actions CI/CD
-Model serialization using Joblib
+## 🛠️ Tech Stack & Architecture
 
-🤖 Machine Learning Models
+| Component | Technology | Purpose |
+|---|---|---|
+| **Language** | Python 3.12 | Core programming environment |
+| **ML Framework** | Scikit-learn, Pandas, NumPy | Data ingestion, vectorization, & modeling |
+| **Orchestration** | ZenML | Pipelines DAG orchestration |
+| **Tracking** | MLflow | Parameter, metrics, & artifact logging |
+| **Serving** | FastAPI & Uvicorn | High-performance inference endpoints |
+| **Monitoring** | Prometheus | Real-time service metrics exporter & scraper |
+| **Visualization** | Grafana | System & performance dashboard |
+| **Containerization**| Docker / Docker Compose | Service encapsulation & portability |
+| **CI/CD** | GitHub Actions | Lint checks, syntax validation, & test runner |
 
-The current pipeline compares:
+---
 
-Model	Type
-Naive Bayes	Machine Learning
-Random Forest	Machine Learning
-Linear SVM	Machine Learning
+## 📁 Repository Structure
 
-The models are evaluated using their F1-scores, and the model with the highest F1-score is automatically selected as the best model.
-
-📊 Evaluation Metrics
-
-The main model-selection metric is:
-
-F1-Score
-
-The project can also evaluate:
-
-Accuracy
-Precision
-Recall
-F1-Score
-
-F1-score is used as the primary metric because it provides a balance between precision and recall for sentiment classification.
-
-🛠️ Tech Stack
-
-Technology	Purpose
-Python	Programming language
-Scikit-learn	Machine learning
-Pandas	Data processing
-NumPy	Numerical computation
-ZenML	MLOps pipeline orchestration
-MLflow	Experiment tracking and model artifacts
-FastAPI	Model serving
-Docker	Containerization
-Render	Deployment
-Prometheus	Application monitoring
-Grafana	Metrics visualization
-GitHub Actions	CI/CD
-Joblib	Model serialization
-
-
-📁 Project Structure
-```
-Sentiment-Analysis-ML_Ops/
-│
+```text
+├── .github/workflows/   # CI/CD pipelines (GitHub Actions)
+├── .zen/                # ZenML local repository settings
 ├── api/
 │   ├── __init__.py
-│   └── app.py
-│
+│   └── app.py           # FastAPI server with prometheus instrumentator
+├── grafana/
+│   └── dashboard.json   # Pre-configured Grafana metrics panel
+├── mlflow/
+│   ├── artifacts/       # Local MLflow run files and binaries
+│   └── mlflow.db        # Backend sqlite metadata database
+├── models/
+│   └── best_model.joblib# Serialized best model and pipeline vectorizer
+├── monitoring/
+│   └── prometheus.yml   # Prometheus scrape specifications & targets
 ├── pipelines/
-│   ├── __init__.py
-│   └── sentiment_pipeline.py
-│
+│   └── sentiment_pipeline.py # Orchestrated ZenML ML pipeline definition
 ├── steps/
-│   ├── __init__.py
 │   ├── data_ingestion.py
 │   ├── preprocess_data.py
 │   ├── feature_engineering.py
@@ -139,297 +99,137 @@ Sentiment-Analysis-ML_Ops/
 │   ├── train_svm.py
 │   ├── select_best_model.py
 │   └── save_best_model.py
-│
-├── models/
-│   └── best_model.joblib
-│
-├── mlflow/
-│   ├── artifacts/
-│   └── mlflow.db
-│
-├── monitoring/
-│   └── prometheus.yml
-│
-├── grafana/
-│   └── dashboard.json
-│
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-│
-├── .zen/
-│   └── config.yaml
-│
-├── Dockerfile
-├── .dockerignore
-├── .gitignore
-├── requirements.txt
-├── render.yaml
-└── README.md
-
+├── Dockerfile           # Minimal API production server Dockerfile
+├── docker-compose.yml   # Infrastructure composed setup (MLflow, Prom, Grafana, API)
+├── requirements.txt     # Python dependency definition file
+└── README.md            # Project description & guide
 ```
 
-⚙️ Installation
+---
 
+## ⚙️ Quick Start Installation
 
-1. Clone the Repository
+### 1. Clone the Repository
+```bash
 git clone https://github.com/AarjavShahh/Sentiment-Analysis-ML_Ops.git
 cd Sentiment-Analysis-ML_Ops
-2. Create a Virtual Environment
-python3.12 -m venv venv
-3. Activate the Virtual Environment
+```
 
-For Linux/WSL:
+### 2. Configure Virtual Environment
 
-source venv/bin/activate
-
-For Windows:
-
+Create and activate a virtual environment (Python 3.12 recommended):
+```bash
+# Windows
+python -m venv venv
 venv\Scripts\activate
-4. Install Dependencies
+
+# Linux / macOS / WSL
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-🔄 Running the MLOps Pipeline
+---
 
-From the project root:
+## 🔄 Running the MLOps Pipeline
 
-export PYTHONPATH=$PWD:$PYTHONPATH
-python -m pipelines.sentiment_pipeline
+Run the ZenML orchestrated pipeline to ingest, clean, evaluate, track, and output the best-performing model to `models/best_model.joblib`:
 
-The ZenML pipeline performs:
-
-Data ingestion
-Data preprocessing
-Feature engineering
-Model training
-Model evaluation
-Model comparison
-Best-model selection
-Model serialization
-MLflow tracking
-
-The final model is saved as:
-
-models/best_model.joblib
-
-📈 MLflow
-
-MLflow is used for experiment tracking and artifact management.
-
-Start the MLflow server:
-
-mlflow server --host 0.0.0.0 --port 5000
-
-Open the MLflow dashboard:
-
-http://127.0.0.1:5000
-
-MLflow tracks:
-
-Model parameters
-Model metrics
-F1-score
-Best model
-Model artifacts
-Training runs
-
-🧪 ZenML
-
-ZenML is used to organize the machine learning workflow into reproducible pipeline steps.
-
-The main pipeline is:
-
-pipelines/sentiment_pipeline.py
-
-Individual pipeline steps are located inside:
-
-steps/
-
-Run the pipeline using:
+```bash
+# Ensure PYTHONPATH includes root
+export PYTHONPATH=$PWD:$PYTHONPATH  # Linux/WSL
+# or PC PowerShell:
+$env:PYTHONPATH="."
 
 python -m pipelines.sentiment_pipeline
+```
 
-🌐 FastAPI
+---
 
-The trained model is served through FastAPI.
+## 🌐 Serving & Dashboards URLs
 
-Start the API:
+All local and containerized services are mapped to their respective local loops:
 
-uvicorn api.app:app --host 0.0.0.0 --port 8000
+| Service | Address | Description |
+|---|---|---|
+| **FastAPI Swagger UI** | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) | Interactive API testing documentation |
+| **ZenML Dashboard** | [http://127.0.0.1:8237/](http://127.0.0.1:8237/) | Pipeline execution logs & DAG visualizations |
+| **MLflow Tracking UI** | [http://127.0.0.1:5000/](http://127.0.0.1:5000/) | Metrics, params & model registry tracker |
+| **Prometheus Server** | [http://127.0.0.1:9090/](http://127.0.0.1:9090/) | Scraping state & time-series database UI |
+| **Grafana Dashboard** | [http://127.0.0.1:3000/](http://127.0.0.1:3000/) | System metrics & sentiment request visualizations |
 
-Open the API:
+---
 
-http://127.0.0.1:8000
+## 🚀 Serving and Infrastructure Setup
 
-Open the interactive Swagger documentation:
+### Starting the Serving API (Host Mode)
+Launch the FastAPI application on your local machine using `uvicorn`:
+```bash
+uvicorn api.app:app --host 127.0.0.1 --port 8000
+```
+#### Example Request
+```bash
+curl -X 'POST' \
+  'http://127.0.0.1:8000/predict' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "text": "This movie was absolutely amazing! The story, acting, and direction were excellent."
+}'
+```
+#### Output Payload
+```json
+{
+  "text": "This movie was absolutely amazing! The story, acting, and direction were excellent.",
+  "prediction": 1,
+  "sentiment": "positive",
+  "model": "Linear SVM"
+}
+```
 
-http://127.0.0.1:8000/docs
-Example Request
-curl -X POST "http://127.0.0.1:8000/predict" \
--H "Content-Type: application/json" \
--d '{"text":"This movie was absolutely fantastic!"}'
+### Starting Infrastructure (Containers)
+To launch MLflow, Prometheus, and Grafana in the background, spin up Docker Compose:
+```bash
+docker compose up -d
+```
+This launches:
+- **MLflow Tracking** connected to a SQLite DB (`mlflow/mlflow.db`).
+- **Prometheus** configured via `monitoring/prometheus.yml` (scraping host FastAPI metrics through `host.docker.internal:8000`).
+- **Grafana** loaded and connected to Prometheus.
 
-The API returns the predicted sentiment.
+---
 
-🐳 Docker
+## 📈 Monitoring Configuration
 
-Build the Docker image:
+### 1. Prometheus Target Scrapes
+Prometheus pulls real-time tracking metrics from Python's FastAPI process. The target is defined in `monitoring/prometheus.yml`:
+```yaml
+scrape_configs:
+  - job_name: "fastapi-app"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:8000"]
+```
 
-docker build -t sentiment-analysis-mlops .
+### 2. Grafana Dashboard Import
+To visualize metrics:
+1. Open Grafana at [http://localhost:3000/](http://localhost:3000/).
+2. Add Prometheus (`http://prometheus:9090`) as a Data Source.
+3. Import the pre-configured layout from `grafana/dashboard.json` to monitor server request rate, errors, latencies, and sentiment distributions.
 
-Run the container:
+---
 
-docker run -d \
-  --name sentiment-api \
-  -p 8000:8000 \
-  sentiment-analysis-mlops
+## 🧪 Testing and Quality Control
 
-Access the API:
-
-http://127.0.0.1:8000
-
-Swagger documentation:
-
-http://127.0.0.1:8000/docs
-
-Deployment flow:
-
-GitHub
-   │
-   ▼
-Docker Container
-   │
-   ▼
-FastAPI
-   │
-   ▼
-Sentiment Prediction
-📊 Prometheus Monitoring
-
-Prometheus is used to collect application metrics.
-
-Configuration:
-
-monitoring/prometheus.yml
-
-Start Prometheus:
-
-prometheus --config.file=monitoring/prometheus.yml
-
-Open the Prometheus dashboard:
-
-http://127.0.0.1:9090
-
-📉 Grafana Dashboard
-
-Grafana is used to visualize the metrics collected by Prometheus.
-
-Start Grafana:
-
-grafana-server
-
-Open Grafana:
-
-http://127.0.0.1:3000
-
-The project contains a dashboard configuration:
-
-grafana/dashboard.json
-
-The dashboard can be imported into Grafana to visualize application metrics.
-
-🔁 CI/CD
-
-GitHub Actions is configured through:
-
-.github/workflows/ci.yml
-
-The CI workflow can automatically run project checks whenever code is pushed to GitHub.
-
-Workflow:
-
-Developer
-    │
-    ▼
-Git Commit
-    │
-    ▼
-GitHub Push
-    │
-    ▼
-GitHub Actions
-    │
-    ├── Install Dependencies
-    ├── Run Tests
-    └── Validate Project
-
-
-    ```
-
-
-🔐 Security
-
-Do not commit sensitive information such as:
-
-.env
-API keys
-Access tokens
-Passwords
-Cloud credentials
-Private keys
-
-Use .gitignore to prevent sensitive and unnecessary files from being committed.
-
-🧪 Testing
-
-Run the test suite:
-
+Ensure syntax coherence and run tests:
+```bash
+# Run Pytest suite
 pytest
 
-Check Python files for syntax errors:
-
+# Compile assets syntax check
 python -m compileall api pipelines steps
-
-
-🚀 Local Development Workflow
-
-Terminal 1 — MLflow
-mlflow server --host 0.0.0.0 --port 5000
-Terminal 2 — ZenML Pipeline
-cd ~/imdb_mlo
-source venv/bin/activate
-export PYTHONPATH=$PWD:$PYTHONPATH
-python -m pipelines.sentiment_pipeline
-Terminal 3 — FastAPI
-uvicorn api.app:app --host 0.0.0.0 --port 8000
-Terminal 4 — Prometheus
-prometheus --config.file=monitoring/prometheus.yml
-Terminal 5 — Grafana
-grafana-server
-
-
-📌 Future Improvements
-
-BiLSTM deep learning model
-Optuna hyperparameter optimization
-ML + DL model comparison
-Automated model retraining
-Model versioning
-Hugging Face Hub integration
-Advanced API monitoring
-Automated model deployment
-Improved Grafana dashboards
-Additional automated tests
-Data and model drift detection
-
-
-👨‍💻 Author
-
-Aarjav Shahh
-Brnsey Sharma 
-
-MSc Data Science
-
-GitHub Repository:
-
-https://github.com/AarjavShahh/Sentiment-Analysis-ML_Ops
+```
