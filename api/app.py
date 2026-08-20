@@ -11,7 +11,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = BASE_DIR / "models" / "best_model.pkl"
+MODEL_PATH = BASE_DIR / "models" / "best_model.joblib"
 
 
 # ============================================================
