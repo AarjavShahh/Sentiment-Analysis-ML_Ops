@@ -248,6 +248,7 @@ steps/
 Run the pipeline using:
 
 python -m pipelines.sentiment_pipeline
+
 🌐 FastAPI
 
 The trained model is served through FastAPI.
@@ -290,13 +291,6 @@ http://127.0.0.1:8000
 Swagger documentation:
 
 http://127.0.0.1:8000/docs
-☁️ Render Deployment
-
-The project contains:
-
-render.yaml
-
-which provides the configuration required for deployment on Render.
 
 Deployment flow:
 
@@ -325,6 +319,7 @@ prometheus --config.file=monitoring/prometheus.yml
 Open the Prometheus dashboard:
 
 http://127.0.0.1:9090
+
 📉 Grafana Dashboard
 
 Grafana is used to visualize the metrics collected by Prometheus.
@@ -431,6 +426,7 @@ Data and model drift detection
 👨‍💻 Author
 
 Aarjav Shahh
+Brnsey Sharma 
 
 MSc Data Science
 
