@@ -1,7 +1,6 @@
-from pathlib import Path
-import pickle
-
 import mlflow
+import joblib
+from pathlib import Path
 from zenml import step
 
 
@@ -17,115 +16,56 @@ def save_best_model(
 ) -> str:
 
     # ---------------------------------------------------------
-    # 1. Select best model based on F1 score
+    # Select best model
     # ---------------------------------------------------------
-    models = {
-        "Random Forest": {
-            "model": random_forest_model,
-            "f1": float(random_forest_f1),
-        },
-        "Linear SVM": {
-            "model": svm_model,
-            "f1": float(svm_f1),
-        },
-        "Naive Bayes": {
-            "model": naive_bayes_model,
-            "f1": float(naive_bayes_f1),
-        },
+
+    scores = {
+        "Random Forest": random_forest_f1,
+        "Linear SVM": svm_f1,
+        "Naive Bayes": naive_bayes_f1,
     }
 
-    best_model_name = max(
-        models,
-        key=lambda name: models[name]["f1"]
-    )
+    models = {
+        "Random Forest": random_forest_model,
+        "Linear SVM": svm_model,
+        "Naive Bayes": naive_bayes_model,
+    }
 
-    best_model = models[best_model_name]["model"]
-    best_f1 = models[best_model_name]["f1"]
+    best_model_name = max(scores, key=scores.get)
+    best_model = models[best_model_name]
+    best_f1 = scores[best_model_name]
+
+    print("=" * 60)
+    print(f"Best Model: {best_model_name}")
+    print(f"Best F1 Score: {best_f1:.4f}")
+    print("=" * 60)
 
     # ---------------------------------------------------------
-    # 2. Create models directory
+    # Save model + vectorizer
     # ---------------------------------------------------------
+
     model_dir = Path("models")
     model_dir.mkdir(parents=True, exist_ok=True)
 
-    model_path = model_dir / "best_model.pkl"
-    vectorizer_path = model_dir / "vectorizer.pkl"
+    model_path = model_dir / "best_model.joblib"
+
+    model_data = {
+        "model": best_model,
+        "vectorizer": vectorizer,
+        "model_name": best_model_name,
+    }
+
+    joblib.dump(model_data, model_path)
+
+    print(f"Model saved to: {model_path}")
 
     # ---------------------------------------------------------
-    # 3. Save best model
+    # MLflow
     # ---------------------------------------------------------
-    with open(model_path, "wb") as f:
-        pickle.dump(best_model, f)
 
-    # ---------------------------------------------------------
-    # 4. Save vectorizer
-    # ---------------------------------------------------------
-    with open(vectorizer_path, "wb") as f:
-        pickle.dump(vectorizer, f)
-
-    # ---------------------------------------------------------
-    # 5. Log to the ACTIVE ZenML MLflow run
-    # ---------------------------------------------------------
-    # IMPORTANT:
-    # Do NOT use mlflow.start_run() here.
-    # ZenML already created the active MLflow run.
-
-    mlflow.log_param(
-        "best_model",
-        best_model_name
-    )
-
-    mlflow.log_metric(
-        "best_f1_score",
-        best_f1
-    )
-
-    mlflow.log_metric(
-        "random_forest_f1",
-        float(random_forest_f1)
-    )
-
-    mlflow.log_metric(
-        "svm_f1",
-        float(svm_f1)
-    )
-
-    mlflow.log_metric(
-        "naive_bayes_f1",
-        float(naive_bayes_f1)
-    )
-
-    # ---------------------------------------------------------
-    # 6. Log artifacts
-    # ---------------------------------------------------------
-    mlflow.log_artifact(
-        str(model_path),
-        artifact_path="best_model"
-    )
-
-    mlflow.log_artifact(
-        str(vectorizer_path),
-        artifact_path="best_model"
-    )
-
-    # ---------------------------------------------------------
-    # 7. Print result
-    # ---------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("MODEL COMPARISON")
-    print("=" * 60)
-
-    print(f"Random Forest F1 : {random_forest_f1:.4f}")
-    print(f"Linear SVM F1    : {svm_f1:.4f}")
-    print(f"Naive Bayes F1   : {naive_bayes_f1:.4f}")
-
-    print("-" * 60)
-    print(f"BEST MODEL       : {best_model_name}")
-    print(f"BEST F1 SCORE    : {best_f1:.4f}")
-    print(f"MODEL PATH       : {model_path}")
-    print("=" * 60 + "\n")
+    if mlflow.active_run():
+        mlflow.log_metric("best_f1_score", float(best_f1))
+        mlflow.log_param("best_model", best_model_name)
+        mlflow.log_artifact(str(model_path))
 
     return str(model_path)
-
-
-
