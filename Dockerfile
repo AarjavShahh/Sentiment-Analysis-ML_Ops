@@ -16,9 +16,14 @@ RUN apt-get update && \
 # CACHE LAYER 1: Python dependencies
 # ============================================================
 
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
+# Install only the lightweight dependencies needed for API serving
+RUN pip install --no-cache-dir \
+    fastapi==0.138.2 \
+    pydantic==2.12.5 \
+    joblib==1.5.3 \
+    scikit-learn==1.9.0 \
+    uvicorn==0.52.3 \
+    prometheus-fastapi-instrumentator
 
 # ============================================================
 # CACHE LAYER 2: Application files

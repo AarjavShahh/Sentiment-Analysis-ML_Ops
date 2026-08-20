@@ -7,6 +7,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import f1_score
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_experiment("IMDB_Sentiment_Analysis")
 
 @step
 def train_naive_bayes(
